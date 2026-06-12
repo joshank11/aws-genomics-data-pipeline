@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+.env
+venv/
+
+# AWS credentials — never commit these
+.aws/
+*.pem
+*.key
+
+# Zip files — regenerate from source
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/

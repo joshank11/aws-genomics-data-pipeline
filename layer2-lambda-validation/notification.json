@@ -1,0 +1,14 @@
+{
+  "LambdaFunctionConfigurations": [{
+    "LambdaFunctionArn": "arn:aws:lambda:ap-south-2:ACCOUNT_ID:function:clovertex-fastq-validator",
+    "Events": ["s3:ObjectCreated:*"],
+    "Filter": {
+      "Key": {
+        "FilterRules": [
+          {"Name": "prefix", "Value": "raw/"},
+          {"Name": "suffix", "Value": ".fastq"}
+        ]
+      }
+    }
+  }]
+}

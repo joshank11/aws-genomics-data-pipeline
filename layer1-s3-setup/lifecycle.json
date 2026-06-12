@@ -1,0 +1,13 @@
+{
+  "Rules": [
+    {
+      "ID": "genomics-raw-tiering",
+      "Status": "Enabled",
+      "Filter": {"Prefix": "raw/"},
+      "Transitions": [
+        {"Days": 30, "StorageClass": "STANDARD_IA"},
+        {"Days": 90, "StorageClass": "GLACIER"}
+      ]
+    }
+  ]
+}

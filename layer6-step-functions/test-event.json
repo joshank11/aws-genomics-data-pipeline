@@ -1,0 +1,13 @@
+{
+  "Records": [{
+    "s3": {
+      "bucket": {
+        "name": "clovertex-genomics-prod-shashank"
+      },
+      "object": {
+        "key": "raw/genomics/sample_006/sample_006.fastq",
+        "size": 234
+      }
+    }
+  }]
+}
