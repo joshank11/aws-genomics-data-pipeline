@@ -35,37 +35,32 @@ Without ResultPath, each state's output replaces the entire input — next state
 
 ## Bugs Encountered & Fixed
 
-### Bug 1 — SSE-S3 Encryption "Not Working"
-**Symptom:** SSE-S3 toggle missing in S3 console.  
-**Cause:** Since Jan 2023, AWS silently applies SSE-S3 to all new buckets automatically.  
-**Fix:** Not broken — working as designed. Switched to SSE-KMS for audit trail compliance.
-
-### Bug 2 — CloudShell Unavailable in ap-south-2
+### Bug 1 — CloudShell Unavailable in ap-south-2
 **Symptom:** `Unable to create the environment` error in ap-south-2 CloudShell.  
 **Cause:** CloudShell only launched in ap-south-2 on May 2025, had provisioning issues.  
 **Fix:** Switched to ap-south-1 CloudShell temporarily. Scripts run fine since boto3 region is hardcoded.
 
-### Bug 3 — S3 Lambda Trigger Ambiguous Configuration
+### Bug 2 — S3 Lambda Trigger Ambiguous Configuration
 **Symptom:** `InvalidArgument: Configuration is ambiguously defined` when adding second Lambda trigger.  
 **Cause:** S3 does not allow two rules with identical prefix + suffix + event type.  
 **Fix:** Lambda chaining — validator invokes converter via `lambda_client.invoke(InvocationType='Event')`. Later moved to Step Functions orchestration.
 
-### Bug 4 — Step Functions KeyError Records
+### Bug 3 — Step Functions KeyError Records
 **Symptom:** `KeyError: 'Records'` in fastq_to_csv Lambda when invoked by Step Functions.  
 **Cause:** Without `ResultPath`, each state's output replaces the input entirely. Converter received `{'statusCode': 200, 'result': 'PASS'}` instead of the S3 event.  
 **Fix:** Added `"ResultPath": "$.validationResult"` to ValidateFASTQ state — preserves original S3 event at `$`.
 
-### Bug 5 — Lambda returns 400 but Step Functions moves to next state
+### Bug 4 — Lambda returns 400 but Step Functions moves to next state
 **Symptom:** Invalid FASTQ file not caught by Step Functions Catch block.  
 **Cause:** `return {'statusCode': 400}` is treated as successful execution by Step Functions.  
 **Fix:** Changed to `raise Exception(msg)` on failure — Step Functions Catch block now triggers correctly.
 
-### Bug 6 — ConcurrentRunsExceededException on Glue ETL
+### Bug 5 — ConcurrentRunsExceededException on Glue ETL
 **Symptom:** `Glue.ConcurrentRunsExceededException` on Step Functions RunGlueETL state.  
 **Cause:** Step Functions Retry block fired two simultaneous Glue job attempts while first was still running.  
 **Fix:** Removed Retry from RunGlueETL state. Increased `MaxConcurrentRuns` to 3 on the Glue job.
 
-### Bug 7 — Glue crawler trust policy error
+### Bug 6 — Glue crawler trust policy error
 **Symptom:** `InvalidInputException: Service is unable to assume provided role` when creating Glue crawler.  
 **Cause:** IAM role trust policy only allowed `lambda.amazonaws.com`. Glue needs its own trust entry.  
 **Fix:** Updated trust policy to include `glue.amazonaws.com` and `states.amazonaws.com`.
