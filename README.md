@@ -9,7 +9,7 @@ FASTQ → S3 → Lambda Validation → Glue ETL → Parquet → Athena SQL
 ## Stack
 | Layer | Technology | What It Does |
 |-------|-----------|--------------|
-| 1 | S3 + KMS + Lifecycle | Medallion storage — raw/processed/curated |
+| 1 | S3 + Lifecycle | Medallion storage — raw/processed/curated |
 | 2 | Lambda + CloudWatch | Event-driven FASTQ validation + quarantine |
 | 3 | Glue Crawler + Athena | Auto-catalog schema + SQL on S3 |
 | 4 | Glue ETL + PySpark | CSV → Parquet, 100x cheaper Athena queries |
@@ -80,11 +80,15 @@ SELECT sample_id, COUNT(*) as reads, AVG(gc_content) as avg_gc
 FROM genomics
 GROUP BY sample_id ORDER BY sample_id;
 
--- sample_003 | 3 | 50.0
--- sample_004 | 3 | 50.0
--- sample_005 | 3 | 50.0
--- sample_006 | 3 | 50.0  ← Step Functions orchestrated run
+-- sample_003 | 3 | 50.0 <- MEDIUM gc_category
+-- sample_004 | 3 | 65.0 <- HIGH gc_category 
+-- sample_005 | 3 | 35.0 <- LOW gc_category
+-- sample_006 | 3 | 55.0  ← Medium gc_category <- Step Functions orchestrated run
 ```
+
+
+
+
 
 ## Setup
 See each layer's folder for deployment commands.  
