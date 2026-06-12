@@ -66,8 +66,16 @@ Without ResultPath, each state's output replaces the entire input — next state
 **Fix:** Updated trust policy to include `glue.amazonaws.com` and `states.amazonaws.com`.
 
 ## Sample Data
-- `sample_valid.fastq` — valid 3-read FASTQ, passes all validation checks
-- `sample_invalid.fastq` — sequence/quality length mismatch, triggers quarantine
+Located in `layer2-lambda-validation/test-data/`:
+
+| File | GC Content | gc_category | Description |
+|------|-----------|-------------|-------------|
+| `sample_003.fastq` | 50.0% | MEDIUM | Normal human genome range |
+| `sample_004.fastq` | 65.0% | HIGH | High GC organism (e.g. M. tuberculosis) |
+| `sample_005.fastq` | 35.0% | LOW | Low GC organism (e.g. P. falciparum) |
+| `sample_006.fastq` | 55.0% | MEDIUM | Slightly high normal range |
+| `sample_valid.fastq` | 50.0% | MEDIUM | Generic valid FASTQ — passes all checks |
+| `sample_invalid.fastq` | — | — | Sequence/quality length mismatch — triggers quarantine |
 
 ## Results
 ```sql
@@ -75,10 +83,10 @@ SELECT sample_id, COUNT(*) as reads, AVG(gc_content) as avg_gc
 FROM genomics
 GROUP BY sample_id ORDER BY sample_id;
 
--- sample_003 | 3 | 50.0 <- MEDIUM gc_category
--- sample_004 | 3 | 65.0 <- HIGH gc_category 
--- sample_005 | 3 | 35.0 <- LOW gc_category
--- sample_006 | 3 | 55.0  ← Medium gc_category <- Step Functions orchestrated run
+-- sample_003 | 3 reads | 50.0% GC  | MEDIUM  (normal)
+-- sample_004 | 3 reads | 65.0% GC  | HIGH    (high GC organism)
+-- sample_005 | 3 reads | 35.0% GC  | LOW     (low GC organism)
+-- sample_006 | 3 reads | 55.0% GC  | MEDIUM  (Step Functions orchestrated run)
 ```
 
 
